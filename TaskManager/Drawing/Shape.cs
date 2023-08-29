@@ -11,13 +11,13 @@ namespace Drawing
         public int X { get; set; }
         public int Y { get; set; }
 
-        public int Width { get; set; }
+        public virtual int Width { get; set; }
         public int Height { get; set; }
 
         public virtual int OuterWidth { get => this.Width; }
         public virtual int OuterHeight { get => this.Height; }
-        public virtual int InnerX { get => this.X; }
-        public virtual int InnerY { get => this.Y; }
+        public virtual int OutlineLeft { get => this.X; }
+        public virtual int OutlineTop { get => this.Y; }
 
         public Shape? Container { get; private set; }
         public List<IDrawable> Children { get; set; } = new List<IDrawable>();
@@ -37,14 +37,15 @@ namespace Drawing
         public (int, int) GetAbsolutePosition()
         {
             if (this.Container == null) return (this.X, this.Y);
-            return (this.Container.InnerX + this.X, this.Container.InnerY + this.Y);
+            (int x, int y) = this.Container.GetAbsolutePosition();
+            return (x + this.Container.OutlineLeft + this.X, y + this.Container.OutlineTop + this.Y);
         }
 
         public void RenderChildren()
         {
             foreach (var v in this.Children)
             {
-                if (v.IsVisible) v.Render();
+                if (v.Visible) v.Render();
             }
         }
     }

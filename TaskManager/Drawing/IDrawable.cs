@@ -8,7 +8,7 @@ namespace Drawing
 {
     public interface IDrawable
     {
-        bool IsVisible { get; }
+        bool Visible { get; }
         void Render();
         void Fill();
     }

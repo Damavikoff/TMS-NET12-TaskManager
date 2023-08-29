@@ -15,7 +15,7 @@ namespace Drawing
         Right
     }
 
-    public class Text : Rect
+    public partial class Text : Rect
     {
 
         public ConsoleColor Color { get; set; }
@@ -24,8 +24,8 @@ namespace Drawing
 
         public Text(int width, int height, string value, Shape container, ConsoleColor background, ConsoleColor color) : base(width, height, container, background)
         {
-            this.Color = color;
-            this.Value = value;
+            Color = color;
+            Value = value;
         }
         public Text(int width, int height, string value, Shape container, ConsoleColor background) : this(width, height, value, container, background, Console.ForegroundColor) { }
         public Text(int width, int height, string value, Rect container) : this(width, height, value, container, container.Background, Console.ForegroundColor) { }
@@ -34,44 +34,65 @@ namespace Drawing
 
         public override void Render()
         {
-            var lines = GetLines();
-            ConsoleUtils.SetColors(this.Background, this.Color);
-            for (int i = 0; i < lines.Count; i++)
-            {
-                SetLine(i);
-                Console.Write(lines[i]);
-            }
-            ConsoleUtils.SetColors();
+            Render(Background, Color);
         }
 
-        public List<string> GetLines()
+        public void Render(ConsoleColor background, ConsoleColor foreground)
+        {
+            var lines = GetLines();
+            ConsoleUtils.SetColors(background, foreground);
+            for (int i = 0; i < lines.Count; i++)
+            {
+                (int x, int y) = SetLine(i);
+                Console.Write(lines[i]);
+            }
+        }
+
+        private List<string> GetLines()
         {
             var lines = new List<string>();
-            if (string.IsNullOrEmpty(this.Value)) return lines;
+            if (string.IsNullOrEmpty(Value)) return lines;
 
-            var words = Regex.Split(this.Value, @"\s");
+            var words = WordSplitRegex().Split(Value);
             var count = 0;
             var builder = new StringBuilder();
             foreach (var w in words)
             {
-                if (lines.Count >= this.Height) break;
-                if (builder.Length + w.Length <= this.Width) {
+                if (lines.Count >= Height) break;
+                if (builder.Length + w.Length <= Width) {
                     builder.Append(count == 0 ? w : $" {w}");
                     count++;
                     continue;
                 }
-                var isLast = lines.Count == this.Height - 1;
-                if (lines.Count == this.Height - 1)
+                var isLast = lines.Count == Height - 1;
+                if (isLast)
                 {
-                    var value = builder.Length + 4 >= this.Width ? "..." : $" {w.Substring(0, this.Width - builder.Length - 4)}...";
-                    builder.Append(value);
+                    builder.Append($" {w}");
+                    lines.Add(GetLine(builder.ToString().Substring(0, Width - 3) + "..."));
+                    return lines;
                 }
-                lines.Add(builder.ToString());
-                if (isLast) break;
+                lines.Add(GetLine(builder.ToString()));
                 builder.Clear();
                 builder.Append(w);
             }
+            lines.Add(GetLine(builder.ToString()));
             return lines;
         }
+
+        private string GetLine(string text)
+        {
+            if (text.Length < Width)
+            {
+                var diff = this.Width - text.Length;
+                if (this.Align == TextAlign.Left) return text + new string(' ', Width - text.Length);
+                if (this.Align == TextAlign.Right) return new string(' ', Width - text.Length) + text;
+                var half = (int)(diff / 2);
+                return new string(' ', half) + text + new string(' ', diff - half);
+            }
+            return text;
+        }
+
+        [GeneratedRegex("\\s")]
+        private static partial Regex WordSplitRegex();
     }
 }
