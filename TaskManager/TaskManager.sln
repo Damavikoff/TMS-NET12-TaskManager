@@ -5,9 +5,11 @@ VisualStudioVersion = 17.7.34018.315
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskManager", "TaskManager\TaskManager.csproj", "{2ADEC08C-CCEB-4CE5-BBB0-92C38940F72C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utils", "Utils\Utils.csproj", "{A83EBB2B-EACB-470F-B371-F5F750EDD8B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utils", "Utils\Utils.csproj", "{A83EBB2B-EACB-470F-B371-F5F750EDD8B4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drawing", "Drawing\Drawing.csproj", "{C522A0B8-69A6-4A14-BDEF-BA64A4E12D99}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Drawing", "Drawing\Drawing.csproj", "{C522A0B8-69A6-4A14-BDEF-BA64A4E12D99}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToDoApp", "ToDoApp\ToDoApp.csproj", "{09D15710-FA83-4605-9023-2FDCE876ADF8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{C522A0B8-69A6-4A14-BDEF-BA64A4E12D99}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C522A0B8-69A6-4A14-BDEF-BA64A4E12D99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C522A0B8-69A6-4A14-BDEF-BA64A4E12D99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09D15710-FA83-4605-9023-2FDCE876ADF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09D15710-FA83-4605-9023-2FDCE876ADF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09D15710-FA83-4605-9023-2FDCE876ADF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09D15710-FA83-4605-9023-2FDCE876ADF8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

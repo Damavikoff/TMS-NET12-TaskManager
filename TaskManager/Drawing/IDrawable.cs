@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Drawing
+﻿namespace Drawing
 {
     public interface IDrawable
     {
-        bool Visible { get; }
+        bool Visible { get; set; }
         void Render();
-        void Fill();
     }
 }

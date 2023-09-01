@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
+using System.Text;
 
 namespace Utils
 {
@@ -28,12 +29,14 @@ namespace Utils
         private static void SetWindowSize(int width, int height)
         {
             Console.SetWindowSize(width, height);
-            Console.SetBufferSize(width, height + 1);
+            Console.SetBufferSize(width, height);
         }
 
         [SupportedOSPlatform("windows")]
         public static void CreateWindow(int width, int height)
         {
+            Console.OutputEncoding = Encoding.Unicode;
+
             IntPtr handle = GetConsoleWindow();
             IntPtr sysMenu = GetSystemMenu(handle, false);
 

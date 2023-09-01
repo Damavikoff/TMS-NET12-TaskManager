@@ -1,35 +1,71 @@
-﻿using Utils;
+﻿using System;
+using Utils;
 
 namespace Drawing
 {
     public class Button : Rect
     {
-        private string Label { get; set; } = "Button";
-        public ConsoleKey ConsoleKey { get; private set; }
-        private string KeyName { get; set; } = "";
-        public override int Width { get => this.KeyName.Length + this.Label.Length + 1; }
+        private string Title { get; set; } = "Button";
+        private string Label { get; set; } = "";
+        public override int InnerWidth { get => this.Label.Length + this.Title.Length + 1; }
+        public override int Width { get => this.InnerWidth + this.OutlineWidth; }
         public ConsoleColor TextColor { get; private set; } = ConsoleColor.Blue;
+        public ConsoleKey Key { get; set; }
+        public Action? Action { get; set; }
 
-        public Button(int x, int y, string keyName, string label, ConsoleKey key, ConsoleColor background, ConsoleColor foreground, Shape container) : base(x, y, 0, 1, container, background) {
-            this.SetBorders(BorderStyle.Solid, ConsoleColor.Black);
-            this.KeyName = keyName;
+        public Button(int x, int y, string label, string title, ConsoleColor background, ConsoleColor foreground, ConsoleKey key) : base(x, y, 0, 1, background) {
+            this.SetBorderType(BorderStyle.Solid, foreground);
+            this.Padding.Set(0, 1, 0, 1);
+            this.Border.Set(true, true, true, true);
             this.Label = label;
-            this.ConsoleKey = key;
+            this.Title = title;
             this.TextColor = foreground;
+            this.Key = key;
+            this.Relative = false;
         }
-        public Button(int x, int y, string keyName, string label, ConsoleKey key, ConsoleColor foreground, Shape container) : this(x, y, keyName, label, key, ConsoleColor.Gray, foreground, container) { }
-        public Button(int x, int y, string keyName, string label, ConsoleKey key, Shape container) : this(x, y, keyName, label, key, ConsoleColor.Gray, ConsoleColor.Black, container) { }
-        public Button(int y, string keyName, string label, ConsoleKey key, Shape container) : this(0, y, keyName, label, key, ConsoleColor.Gray, ConsoleColor.Black, container) { }
+        public Button(int x, int y, string label, string title, ConsoleColor foreground, ConsoleKey key, Rect container) : this(x, y, label, title, container.Background, foreground, key) { }
+        public Button(int x, int y, string label, string title, ConsoleKey key, Rect container) : this(x, y, label, title, ConsoleColor.White, key, container) { }
+        public Button(int y, string label, string title, ConsoleKey key, Rect container) : this(0, y, label, title, key, container) { }
+        public Button(int y, string label, string title, ConsoleKey key, ConsoleColor background, ConsoleColor foreground) : this(0, y, label, title, background, foreground, key) { }
 
         public override void Render()
         {
             base.Render();
             (int x, int y) = SetLine(1);
-            Console.SetCursorPosition(x + 1, y);
-            ConsoleUtils.SetColors(this.Background, ConsoleColor.Black);
-            Console.Write(this.KeyName + " ");
+            Console.SetCursorPosition(x + this.OutlineLeft, y);
+            ConsoleUtils.SetColors(this.Background, ConsoleColor.Red);
+            Console.Write(this.Label + " ");
             ConsoleUtils.SetColors(this.Background, this.TextColor);
-            Console.Write(this.Label);
+            Console.Write(this.Title);
         }
+
+        public void Click()
+        {
+            if (!this.Visible || this.Action is null) return;
+            this?.Action();
+        }
+
+        public void SetAction(ConsoleKey key, Action action)
+        {
+            this.Key = key;
+            this.Action = action;
+        }
+
+        public void SetAction(Action action)
+        {
+            this.Action = action;
+        }
+    }
+
+    public class KeyAction
+    {
+        public ConsoleKey Key {  get; private set; }
+        public Action? Action { get; set; }
+        public KeyAction(ConsoleKey key, Action? action) {
+            this.Key = key;
+            this.Action = action;
+        }
+
+        public KeyAction(ConsoleKey key) : this(key, null) { }
     }
 }

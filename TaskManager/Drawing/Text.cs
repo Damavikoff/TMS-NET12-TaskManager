@@ -22,15 +22,25 @@ namespace Drawing
         public TextAlign Align { get; set; } = TextAlign.Left;
         public string Value { get; set; } = "";
 
-        public Text(int width, int height, string value, Shape container, ConsoleColor background, ConsoleColor color) : base(width, height, container, background)
+        public Text(int width, int height, string value, Rect container, ConsoleColor background, ConsoleColor color) : base(width, height, background)
         {
-            Color = color;
-            Value = value;
+            this.Color = color;
+            this.Value = value;
+            this.Relative = false;
         }
-        public Text(int width, int height, string value, Shape container, ConsoleColor background) : this(width, height, value, container, background, Console.ForegroundColor) { }
+        public Text(int width, int height, string value, Rect container, ConsoleColor background) : this(width, height, value, container, background, Console.ForegroundColor) { }
         public Text(int width, int height, string value, Rect container) : this(width, height, value, container, container.Background, Console.ForegroundColor) { }
         public Text(Rect container, int height, string value, ConsoleColor color) : this(container.Width, height, value, container, container.Background, color) { }
         public Text(Rect container, int height, string value) : this(container.Width, height, value, container, container.Background) { }
+        public Text(Rect container, string value) : this(container, 1, value) { }
+        public Text(int width, string value, Rect container, TextAlign align) : this(width, 1, value, container) {
+            this.Align = align;
+        }
+
+        public Text(int width, string value, Rect container, TextAlign align, ConsoleColor color) : this(width, value, container, align)
+        {
+            this.Color = color;
+        }
 
         public override void Render()
         {
@@ -68,7 +78,7 @@ namespace Drawing
                 if (isLast)
                 {
                     builder.Append($" {w}");
-                    lines.Add(GetLine(builder.ToString().Substring(0, Width - 3) + "..."));
+                    lines.Add(GetLine(builder.ToString().Substring(0, Math.Max(1, Width - 4)) + "..."));
                     return lines;
                 }
                 lines.Add(GetLine(builder.ToString()));

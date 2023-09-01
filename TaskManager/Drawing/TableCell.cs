@@ -11,17 +11,30 @@ namespace Drawing
         public Text Text { get; set; }
         private TableRow Row { get; set; }
 
-        public TableCell(int x, int width, TableRow row, string value) : base(0, 0, width, 1, row)
+        public TableCell(int x, int width, TableRow row, string value, TextAlign align) : base(0, 0, width, 1, row)
         {
             this.Row = row;
-            this.Text = new Text(this.Width - 2, 1, value, this);
+            this.Text = new Text(this.Width, 1, value, this) { Align = align };
             this.X = x;
-            this.Padding.Left = 1;
-            this.Padding.Right = 1;
+            this.Relative = false;
+            this.Add(this.Text);
         }
+
+        public TableCell(int x, int width, TableRow row, string value) : this(x, width, row, value, TextAlign.Left) { }
 
         public override void Render()
         {
+            //var colors = new ConsoleColor[]
+            //{
+            //    ConsoleColor.DarkGreen,
+            //    ConsoleColor.Red,
+            //    ConsoleColor.Black,
+            //    ConsoleColor.Green,
+            //    ConsoleColor.Magenta,
+            //    ConsoleColor.Cyan
+            //};
+            //var rnd = new Random();
+            //int i = rnd.Next(0, 5);
             this.Text.Render(this.Row.Background, this.Row.Foreground);
         }
 

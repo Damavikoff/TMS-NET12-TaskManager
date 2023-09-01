@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Drawing
+﻿namespace Drawing
 {
     public enum BorderStyle
     {
@@ -49,9 +43,11 @@ namespace Drawing
         public BorderType(BorderStyle style) : this(BorderStyle.Solid, ConsoleColor.White) { }
         public BorderType() : this(BorderStyle.Solid) { }
 
-        public string GetLine(int length, bool first = true)
+        public string GetLine(int length, bool first, bool cornerLeft = true, bool cornerRight = true)
         {
-            return (first ? this.Nw : this.Sw) + new string(this.H, Math.Max(length - 2, 0)) + (first ? this.Ne : this.Se);
+            return (cornerLeft ? (first ? this.Nw : this.Sw) : this.H) +
+                   new string(this.H, Math.Max(length - 2, 0)) +
+                   (cornerRight ? (first ? this.Ne : this.Se) : this.H);
         }
 
         private char GetBorder(BorderElement style) => _elements[(int) style];

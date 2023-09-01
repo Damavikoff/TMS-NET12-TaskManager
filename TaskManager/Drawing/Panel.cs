@@ -7,19 +7,19 @@ namespace Drawing
         public string? Label { get; private set; }
         public ConsoleColor Color { get; private set; }
 
-        public Panel(int x, int y, int width, int height, Shape? container, string label, ConsoleColor background, ConsoleColor color, BorderStyle borderStyle) : base(x, y, width, height, container, background)
+        public Panel(int x, int y, int width, int height, string label, ConsoleColor background, ConsoleColor color, BorderStyle borderStyle) : base(x, y, width, height, background)
         {
             this.Label = label;
             this.Color = color;
-            this.SetBorders(borderStyle, this.Color);
+            this.SetBorderType(borderStyle, this.Color);
         }
-        public Panel(int x, int y, int height, Shape container, string label, ConsoleColor background, ConsoleColor color) : this(x, y, container.Width, height, container, label, background, color, BorderStyle.Double) { }
+        public Panel(int x, int y, int height, Rect container, string label, ConsoleColor background, ConsoleColor color) : this(x, y, container.Width, height, label, background, color, BorderStyle.Double) { }
 
-        public Panel(int x, int y, int height, Rect container, string label, ConsoleColor color) : this(x, y, container.Width - 2, height, container, label, container.Background, color, BorderStyle.Double) { }
-        public Panel(int y, int height, Rect container, string label, ConsoleColor color) : this(0, y, container.Width - 2, height, container, label, container.Background, color, BorderStyle.Double) { }
+        public Panel(int x, int y, int height, Rect container, string label, ConsoleColor color) : this(x, y, container.Width - 2, height, label, container.Background, color, BorderStyle.Double) { }
+        public Panel(int y, int height, Rect container, string label, ConsoleColor color) : this(0, y, container.Width - 2, height, label, container.Background, color, BorderStyle.Double) { }
         public Panel(int y, int height, Rect container, string label) : this(y, height, container, label, ConsoleColor.White) { }
         public Panel(int y, int height, Rect container, string label, BorderStyle borderStyle) : this(y, height, container, label, ConsoleColor.White) {
-            this.SetBorders(borderStyle, this.Color);
+            this.SetBorderType(borderStyle, this.Color);
         }
 
         public override void Render()

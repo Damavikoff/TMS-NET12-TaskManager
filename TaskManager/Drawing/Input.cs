@@ -10,6 +10,7 @@ namespace Drawing
 {
     public class Input : Rect
     {
+        public bool ReanOnly { get; set; } = false;
         public ConsoleColor Color { get; set; }
         public string? Label { get; private set; }
         public string Value { get; set; } = "";
@@ -21,7 +22,7 @@ namespace Drawing
         public string ErrorMessage { get; set; } = "Invalid Formatting!";
         private bool Valid { get => string.IsNullOrEmpty(this.Format) || Regex.IsMatch(this.Value, this.Format); }
 
-        public Input(string? label, string value, Rect container, ConsoleColor background, ConsoleColor color) : base(container.Width, 1, container, background)
+        public Input(string? label, string value, Rect container, ConsoleColor background, ConsoleColor color) : base(container.Width, 1, background)
         {
             this.Label = label;
             this.Value = value;
