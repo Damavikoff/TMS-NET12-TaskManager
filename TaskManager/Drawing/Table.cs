@@ -1,8 +1,8 @@
-﻿using System.Reflection.PortableExecutable;
+﻿using System.Collections;
 
 namespace Drawing
 {
-    public enum Sort
+    public enum Order
     {
         Asc,
         Desc
@@ -15,11 +15,13 @@ namespace Drawing
         public ConsoleColor Color { get; set; }
         public int StartIndex { get; set; } = 0;
         public int EndIndex { get => this.StartIndex + this.RenderCount - 1; }
-        public TableRow? ActiveRow { get => this.FilteredRows.ElementAtOrDefault(this.CurrentIndex); }
+        public TableRow? ActiveRow { get => this.RowsToRender.ElementAtOrDefault(this.CurrentIndex); }
         private int RenderCount { get => this.InnerHeight; }
         public List<TableRow> Rows { get; private set; } = new List<TableRow>();
-        public List<TableRow> RowsToRender { get => FilteredRows.Count <= this.RenderCount ? this.FilteredRows : this.FilteredRows.GetRange(this.StartIndex, this.RenderCount); }
-        public List<TableRow> FilteredRows { get => this.Rows; }
+        public bool Filtered { get; private set; } = false;
+        public List<TableRow> FilteredRows { get; private set; } = new List<TableRow>();
+        public List<TableRow> Page { get => RowsToRender.Count <= this.RenderCount ? this.RowsToRender : this.RowsToRender.GetRange(this.StartIndex, this.RenderCount); }
+        public List<TableRow> RowsToRender => this.Filtered ? this.FilteredRows : this.Rows;
         public TableColumn? SortedBy { get; private set; } = null;
         public int CurrentIndex { get; set; } = 0;
         public int RelativeIndex { get => this.CurrentIndex + this.StartIndex; }
@@ -35,11 +37,11 @@ namespace Drawing
 
         public Table(int y, int height, Rect container, List<TableColumn> columns) : this(y, height, container, columns, ConsoleColor.White) { }
 
-        public void SetRows(params TableRow[] rows)
+        public void SetRows(IEnumerable<TableRow> rows)
         {
-            this.Clear();
+            Clear();
             this.Rows.AddRange(rows);
-            this.AddAll(rows);
+            AddAll(rows);
             SetActiveRow(0);
         }
 
@@ -47,13 +49,15 @@ namespace Drawing
         {
             base.Clear();
             this.Rows.Clear();
+            this.FilteredRows.Clear();
+            this.Filtered = false;
         }
 
         public override void Render()
         {
             this.Fill();
             (int x, int y) = GetAbsolutePosition();
-            this.RowsToRender.ForEach(v => v.Render());
+            this.Page.ForEach(v => v.Render());
         }
 
         public void SetPrev()
@@ -64,13 +68,13 @@ namespace Drawing
 
         public void SetNext()
         {
-            if (this.CurrentIndex == this.FilteredRows.Count - 1) return;
-            SetActiveRow(Math.Min(this.FilteredRows.Count - 1, this.CurrentIndex + 1));
+            if (this.CurrentIndex == this.RowsToRender.Count - 1) return;
+            SetActiveRow(Math.Min(this.RowsToRender.Count - 1, this.CurrentIndex + 1));
         }
 
         public void SetActiveRow(int i)
         {
-            if (this.RowsToRender.Count == 0) return;
+            if (this.Page.Count == 0) return;
             var toRender = i < this.StartIndex || i > this.EndIndex;
             var current = this.CurrentIndex;
             this.CurrentIndex = i;
@@ -80,14 +84,27 @@ namespace Drawing
                 this.Render();
                 return;
             }
-            this.FilteredRows[current].Render();
-            this.FilteredRows[this.CurrentIndex].Render();
+            this.RowsToRender[current].Render();
+            this.RowsToRender[this.CurrentIndex].Render();
         }
 
-        public void SortByIndex(int index, Sort sort = Sort.Asc)
+        public void Sort(int index, Order order = Order.Asc)
         {
             this.SortedBy = this.Columns[index];
-            this.SortedBy.Sort = sort;
+            this.SortedBy.Order = order;
+            this.SortData(index, order);
+        }
+
+        private void SortData(int index, Order sort)
+        {
+            this.Rows.Sort((a, b) => (sort == Order.Asc ? a : b).Cells[index].Value.CompareTo((sort == Order.Asc ? b : a).Cells[index].Value));
+        }
+
+        public void Reset()
+        {
+            this.Filtered = false;
+            this.CurrentIndex = 0;
+            this.FilteredRows.Clear();
         }
     }
 
@@ -118,6 +135,7 @@ namespace Drawing
         {
             header = new Rect(this.InnerWidth, 1, this);
             header.Border.Set(false, false, true, false);
+            this.SetHeaderCells();
             this.Add(header);
         }
 
@@ -136,7 +154,7 @@ namespace Drawing
                 cell.Add(title);
                 if (isActive)
                 {
-                    var arrow = new Text(1, 1, SortLabels[column.Sort], cell, this.Background, ConsoleColor.Yellow) { X = title.Width - 1 };
+                    var arrow = new Text(1, 1, SortLabels[column.Order], cell, this.Background, ConsoleColor.Yellow) { X = title.Width - 1 };
                     cell.Add(arrow);
                 }
                 if (i != columns.Count - 1)
@@ -149,16 +167,16 @@ namespace Drawing
             }
         }
 
-        public void SortByIndex(int i, Sort sort = Sort.Asc)
+        public void Sort(int i, Order sort = Order.Asc)
         {
-            this.Body.SortByIndex(i, sort);
+            this.Body.Sort(i, sort);
             this.SetHeaderCells();
         }
 
-        private static readonly Dictionary<Sort, string> SortLabels = new()
+        private static readonly Dictionary<Order, string> SortLabels = new()
         {
-            { Sort.Asc, "▲" },
-            { Sort.Desc, "▼" }
+            { Order.Asc, "▲" },
+            { Order.Desc, "▼" }
         };
     }
 
@@ -166,20 +184,22 @@ namespace Drawing
     {
         public string Title { get; set; }
         public int Width { get; private set; }
-        public Sort Sort { get; set; }
+        public Order Order { get; set; }
         public TextAlign Align { get; set; }
+        public string? Format { get; set; } = null;
 
-        public TableColumn(string title, int width, Sort sort, TextAlign align)
+        public TableColumn(string title, int width, Order order, TextAlign align)
         {
             this.Title = title; 
             this.Width = width;
+            this.Order = order;
             this.Align = align;
         }
 
-        public TableColumn(string title, int width, TextAlign align) : this(title, width, Sort.Asc, align) { }
+        public TableColumn(string title, int width, TextAlign align) : this(title, width, Order.Asc, align) { }
 
-        public TableColumn(string title, int width, Sort sort) : this(title, width, sort, TextAlign.Left) { }
+        public TableColumn(string title, int width, Order order) : this(title, width, order, TextAlign.Left) { }
 
-        public TableColumn(string title, int width) : this(title, width, Sort.Asc) { }
+        public TableColumn(string title, int width) : this(title, width, Order.Asc) { }
     }
 }

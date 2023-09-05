@@ -23,6 +23,8 @@
         public ToDoState State { get; set;} = ToDoState.InProgress;
         public DateTime Expires { get; set; } = DateTime.UtcNow;
 
+        public ToDo() { }
+
         public ToDo(int id, string name, string descritpion, ToDoPriority priority, ToDoState state, DateTime expires) {
             this.Id = id;
             this.Name = name;

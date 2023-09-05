@@ -8,7 +8,7 @@ namespace TaskManager
         [SupportedOSPlatform("windows")]
         public static void Main(string[] args)
         {
-            ConsoleUtils.CreateWindow(130, 30);
+            ConsoleUtils.CreateWindow(100, 30);
             var app = new App(Console.WindowWidth, Console.WindowHeight);
             app.Run();
             //var rect = new Rect(1, 1, 50, 25, null, ConsoleColor.Yellow);

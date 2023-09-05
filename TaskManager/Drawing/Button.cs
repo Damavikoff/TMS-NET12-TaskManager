@@ -12,6 +12,7 @@ namespace Drawing
         public ConsoleColor TextColor { get; private set; } = ConsoleColor.Blue;
         public ConsoleKey Key { get; set; }
         public Action? Action { get; set; }
+        public bool Disabled { get; set; } = false;
 
         public Button(int x, int y, string label, string title, ConsoleColor background, ConsoleColor foreground, ConsoleKey key) : base(x, y, 0, 1, background) {
             this.SetBorderType(BorderStyle.Solid, foreground);
@@ -41,7 +42,7 @@ namespace Drawing
 
         public void Click()
         {
-            if (!this.Visible || this.Action is null) return;
+            if (this.Disabled || this.Action is null) return;
             this?.Action();
         }
 
@@ -54,6 +55,12 @@ namespace Drawing
         public void SetAction(Action action)
         {
             this.Action = action;
+        }
+
+        public void Toggle(bool enabled = false)
+        {
+            this.Visible = enabled;
+            this.Disabled = !enabled;
         }
     }
 

@@ -19,7 +19,7 @@ namespace TaskManager
             new ToDo("Task 11", "task1_descr", DateTime.UtcNow),
             new ToDo("Task 12", "task1_descr", DateTime.UtcNow),
             new ToDo("Task 13", "task1_descr", DateTime.UtcNow),
-            new ToDo("Task 14", "task1_descr", DateTime.UtcNow),
+            new ToDo("Task 14", "task1_descr", ToDoPriority.P4, ToDoState.Failed, DateTime.UtcNow),
             new ToDo("Task 15", "task1_descr", DateTime.UtcNow),
             new ToDo("Task 16", "task1_descr", DateTime.UtcNow),
             new ToDo("Task 17", "task1_descr", DateTime.UtcNow),

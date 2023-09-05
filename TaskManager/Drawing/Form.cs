@@ -17,7 +17,7 @@
         {
             if (!this.Visible) return;
             base.Render();
-            SwitchInput();
+            //SwitchInput();
             SetKeys();
         }
 
@@ -49,7 +49,7 @@
             }
             var index = inputs.FindIndex(v => this.ActiveInput != null && v == this.ActiveInput);
             this.ActiveInput.Blur();
-            this.ActiveInput = this.Inputs[(index + 1) % inputs.Count];
+            this.ActiveInput = inputs[(index + 1) % inputs.Count];
             this.ActiveInput.Focus();
         }
 
@@ -62,6 +62,11 @@
         {
             this.Buttons = buttons.ToList();
             this.ButtonKeys = this.Buttons.ToDictionary(v => v.Key, v => v);
+        }
+
+        public void Reset()
+        {
+            this.ActiveInput = null;
         }
     }
 }

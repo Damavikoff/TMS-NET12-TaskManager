@@ -12,10 +12,10 @@ namespace Drawing
         public override ConsoleColor Background { get => this.Active ? this.Table.Selection : this.Table.Background; }
         public ConsoleColor Foreground { get => this.Active ? this.Table.Background : this.Table.Color; }
         public Table Table { get; private set; }
-        public override int Y { get => this.Table.RowsToRender.IndexOf(this); }
+        public override int Y { get => this.Table.Page.IndexOf(this); }
         public bool Active { get => this.Table.ActiveRow == this; }
 
-        public TableRow(Table table, string[] values) : base(0, 0, table.Width, 1, table) {
+        public TableRow(Table table, List<CellValue> values) : base(0, 0, table.Width, 1, table) {
             this.Table = table;
             this.Cells = new List<TableCell>();
             var x = 0;
@@ -24,7 +24,8 @@ namespace Drawing
             {
                 var column = table.Columns[i];
                 var w = column.Width;
-                var cell = new TableCell(x, w, this, values[i], column.Align);
+                var v = values[i];
+                var cell = new TableCell(x, w, this, v.Label, v.Value, column.Align);
                 //cell.Padding.Left = i > 0 ? 1 : 0;
                 cell.Padding.Right = i == count - 1 ? 0 : 1;
                 this.Cells.Add(cell);

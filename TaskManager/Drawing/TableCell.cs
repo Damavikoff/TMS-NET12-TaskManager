@@ -1,26 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Drawing
+﻿namespace Drawing
 {
     public class TableCell : Rect
     {
-        public Text Text { get; set; }
+        private readonly Text _text;
         private TableRow Row { get; set; }
+        public string Label => this._text.Value;
+        public IComparable Value { get; private set; }
 
-        public TableCell(int x, int width, TableRow row, string value, TextAlign align) : base(0, 0, width, 1, row)
+        public TableCell(int x, int width, TableRow row, string label, IComparable value, TextAlign align ) : base(0, 0, width, 1, row)
         {
             this.Row = row;
-            this.Text = new Text(this.Width, 1, value, this) { Align = align };
+            this._text = new Text(this.Width, 1, label, this) { Align = align };
             this.X = x;
             this.Relative = false;
-            this.Add(this.Text);
+            this.Add(this._text);
+            this.Value = value;
         }
 
-        public TableCell(int x, int width, TableRow row, string value) : this(x, width, row, value, TextAlign.Left) { }
+        public TableCell(int x, int width, TableRow row, string label, IComparable value) : this(x, width, row, label, value, TextAlign.Left) { }
 
         public override void Render()
         {
@@ -35,12 +32,30 @@ namespace Drawing
             //};
             //var rnd = new Random();
             //int i = rnd.Next(0, 5);
-            this.Text.Render(this.Row.Background, this.Row.Foreground);
+            this._text.Render(this.Row.Background, this.Row.Foreground);
         }
 
         public void SetAlign(TextAlign align)
         {
-            this.Text.Align = align;
+            this._text.Align = align;
+        }
+    }
+
+    public class CellValue
+    {
+        public string Label { get; private set; }
+        public IComparable Value { get; private set; }
+
+        public CellValue(IComparable value, string label)
+        {
+            this.Value = value;
+            this.Label = label;
+        }
+
+        public CellValue(IComparable value)
+        {
+            this.Value = value;
+            this.Label = value?.ToString() ?? "";
         }
     }
 }

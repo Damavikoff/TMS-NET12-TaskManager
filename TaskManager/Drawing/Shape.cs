@@ -110,7 +110,7 @@ namespace Drawing
             this.Render();
         }
 
-        private void Hide()
+        public void Hide()
         {
             if (!this.Visible) return;
             this.Visible = false;
@@ -136,13 +136,18 @@ namespace Drawing
             }
         }
 
-        public void Center ()
+        public void Center()
         {
             if (this.Container == null) return;
             var width = this.Container.OuterWidth;
             var height = this.Container.OuterHeight;
             this.X = width / 2 - this.OuterWidth / 2;
             this.Y = height / 2 - this.OuterHeight / 2;
+        }
+
+        public void FitHeight()
+        {
+            this.Height = this.ContentHeight;
         }
     }
 }
