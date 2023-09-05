@@ -53,7 +53,7 @@
             this.ActiveInput.Focus();
         }
 
-        public void SetInputs(params Input[] inputs)
+        public void SetInputs(IEnumerable<Input> inputs)
         {
             this.Inputs = inputs.ToList();
         }

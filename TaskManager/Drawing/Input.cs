@@ -16,7 +16,7 @@ namespace Drawing
         public ConsoleColor Color { get; set; }
         public ConsoleColor LabelColor { get; set; }
         public string? Label { get; private set; }
-        public string Value { get; set; } = "";
+        public string Value { get; set; } = String.Empty;
         public bool Focused { get; private set; } = false;
         public override int Height { get => string.IsNullOrEmpty(this.Label) ? 2 : 3; }
         public bool Empty { get => string.IsNullOrEmpty(this.Value); }

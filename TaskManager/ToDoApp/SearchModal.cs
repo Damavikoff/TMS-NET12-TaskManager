@@ -1,4 +1,5 @@
 ﻿using Drawing;
+using System;
 using TaskManager;
 
 namespace ToDoApp
@@ -37,7 +38,7 @@ namespace ToDoApp
             this.Visible = false;
             this.Relative = false;
             SetHeader();
-            SetForm(out _body);
+            SetForm(out _body, out _priorityInput, out _stateInput);
             SetControls();
             SetFooter();
             SetPriorityModal(out this._priorityModal);
@@ -55,7 +56,7 @@ namespace ToDoApp
             this.Add(header);
         }
 
-        private void SetForm(out Rect rect)
+        private void SetForm(out Rect rect, out Input priorityInput, out Input stateInput)
         {
             rect = new Rect(this.InnerWidth, 0, this, new BorderType());
             rect.Border.Type.Color = COLOR_BORDER;
@@ -63,6 +64,16 @@ namespace ToDoApp
             rect.Padding.Set(1, 1, 1, 1);
             this._priorityInput = new Input("Priority", rect, COLOR_INPUT, COLOR_TEXT, COLOR_TITLE) { ReanOnly = true };
             this._stateInput = new Input("State", rect, COLOR_INPUT, COLOR_TEXT, COLOR_TITLE) { ReanOnly = true };
+            AddInputs(rect, out priorityInput, out stateInput);
+            rect.AddAll(this.Inputs);
+            rect.FitHeight();
+            Add(rect);
+        }
+
+        private void AddInputs(Rect rect, out Input priorityInput, out Input stateInput)
+        {
+            priorityInput = new Input("Priority", rect, COLOR_INPUT, COLOR_TEXT, COLOR_TITLE) { ReanOnly = true };
+            stateInput = new Input("State", rect, COLOR_INPUT, COLOR_TEXT, COLOR_TITLE) { ReanOnly = true };
             var inputs = new List<Input>()
             {
                 new Input("Id", rect, COLOR_INPUT, COLOR_TEXT, COLOR_TITLE) { Format = @"^\d+$", OnChange = (v) => this._id = v == null ? null : int.Parse(v) },
@@ -71,10 +82,7 @@ namespace ToDoApp
                 this._stateInput,
                 new Input("Expires", rect, COLOR_INPUT, COLOR_TEXT, COLOR_TITLE) { Placeholder = "dd-mm-yyyy", Format = @"^\d{2}-\d{2}-\d{4}$", OnChange = (v) => this._expires = v }
             };
-            rect.AddAll(inputs);
-            rect.FitHeight();
-            Add(rect);
-            SetInputs(inputs.ToArray());
+            SetInputs(inputs);
         }
 
         private void SetFooter()
@@ -163,19 +171,16 @@ namespace ToDoApp
         {
             if (this._id == null && this._name == null && this._priority == null && this._state == null && this._expires == null)
             {
-                this._mainForm.Body.Reset();
+                return;
             }
-            else
-            {
-                Predicate<ToDo> predicate = (v) => {
-                    return (this._id == null || this._id == v.Id) &&
-                    (this._name == null || v.Name.ToUpper().Contains(this._name.ToUpper())) &&
-                    (this._priority == null || this._priority == v.Priority) &&
-                    (this._state == null || this._state == v.State) &&
-                    (this._expires == null || this._expires == v.Expires.ToString("dd-MM-yyyy"));
-                };
-                this._mainForm.Body.Filter(predicate);
-            }
+            Predicate<ToDo> predicate = (v) => {
+                return (this._id == null || this._id == v.Id) &&
+                (this._name == null || v.Name.ToUpper().Contains(this._name.ToUpper())) &&
+                (this._priority == null || this._priority == v.Priority) &&
+                (this._state == null || this._state == v.State) &&
+                (this._expires == null || this._expires == v.Expires.ToString("dd-MM-yyyy"));
+            };
+            this._mainForm.Body.Filter(predicate);
             this.Hide();
         }
     }
