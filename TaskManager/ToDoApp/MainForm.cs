@@ -105,7 +105,7 @@ namespace TaskManager
                 new Button(0, "Del", "Delete", KEY_DELETE, COLOR_BACKGROUND, COLOR_BUTTON),
                 new Button(0, "F2", "Search", KEY_SEARCH, COLOR_BACKGROUND, COLOR_BUTTON) { Action = () => this._searchModal.Show() },
                 new Button(0, "F3", "Sort", KEY_SORT, COLOR_BACKGROUND, COLOR_BUTTON) { Action = () => this._sortModal.Show() },
-                new Button(0, "F4", "Reset", KEY_RESET, COLOR_BACKGROUND, COLOR_BUTTON) { Action = () => Reset() },
+                new Button(0, "F4", "Reset", KEY_RESET, COLOR_BACKGROUND, COLOR_BUTTON) { Action = () => ResetData() },
                 new Button(0, "↑", "Prev", KEY_UP, COLOR_BACKGROUND, COLOR_BUTTON) { Action = () => this._body.Body.SetPrev(), Visible = false },
                 new Button(0, "↓", "Next", KEY_DOWN, COLOR_BACKGROUND, COLOR_BUTTON) { Action = () => this._body.Body.SetNext(), Visible = false },
                 new Button(0, "Esc", "Exit", KEY_EXIT, COLOR_BACKGROUND, COLOR_BUTTON) { Action = () => Environment.Exit(0) }
@@ -113,7 +113,7 @@ namespace TaskManager
             this.SetButtons(buttons);
         }
 
-        private void Reset()
+        private void ResetData()
         {
             this._body.Reset();
             this.RenderChildren();

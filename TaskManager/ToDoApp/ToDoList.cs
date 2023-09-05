@@ -30,9 +30,8 @@ namespace TaskManager
                 };
                 rows.Add(new TableRow(this.Body, values));
             }
-            this.Body.Clear();
             this.Body.CurrentIndex = 0;
-            this.Body.SetRows(rows.ToArray());
+            this.Body.SetRows(rows);
             this.Filtered = true;
         }
 
