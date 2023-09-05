@@ -3,7 +3,7 @@
     public class TableCell : Rect
     {
         private readonly Text _text;
-        private TableRow Row { get; set; }
+        private TableRow? Row { get; set; }
         public string Label => this._text.Value;
         public IComparable Value { get; private set; }
 
@@ -38,6 +38,12 @@
         public void SetAlign(TextAlign align)
         {
             this._text.Align = align;
+        }
+
+        public override void Clear()
+        {
+            this.Row = default;
+            base.Clear();
         }
     }
 

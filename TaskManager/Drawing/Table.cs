@@ -48,6 +48,7 @@ namespace Drawing
         public override void Clear()
         {
             base.Clear();
+            this.Rows.ForEach(row => row.Clear());
             this.Rows.Clear();
             this.FilteredRows.Clear();
             this.Filtered = false;
