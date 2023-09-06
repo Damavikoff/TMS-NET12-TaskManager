@@ -48,7 +48,6 @@ namespace Drawing
         public override void Clear()
         {
             base.Clear();
-            this.Rows.ForEach(row => row.Clear());
             this.Rows.Clear();
             this.FilteredRows.Clear();
             this.Filtered = false;
@@ -96,6 +95,13 @@ namespace Drawing
             this.SortData(index, order);
         }
 
+        public void Sort()
+        {
+            if (this.SortedBy == null) return;
+            var index = this.Columns.IndexOf(this.SortedBy);
+            this.SortData(index, this.SortedBy.Order);
+        }
+
         private void SortData(int index, Order sort)
         {
             this.Rows.Sort((a, b) => (sort == Order.Asc ? a : b).Cells[index].Value.CompareTo((sort == Order.Asc ? b : a).Cells[index].Value));
@@ -140,7 +146,7 @@ namespace Drawing
             this.Add(header);
         }
 
-        private void SetHeaderCells()
+        public void SetHeaderCells()
         {
             this._header.Clear();
             var columns = this.Body.Columns;

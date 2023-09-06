@@ -8,6 +8,7 @@
         private List<Input> WritableInputs { get => this.Inputs.FindAll(v => !v.ReanOnly).ToList(); }
         public Dictionary<ConsoleKey, Button> ButtonKeys { get; private set; } = new Dictionary<ConsoleKey, Button>();
         public override int Height => this.ContentHeight;
+        public bool Valid => this.Inputs.All(v => v.Valid);
 
         public Form(int width, int height) : base(width, height) { }
         public Form(int width, int height, ConsoleColor background) : base(width, height, background) { }

@@ -3,7 +3,7 @@
     public class TableCell : Rect
     {
         private readonly Text _text;
-        private TableRow? Row { get; set; }
+        private TableRow Row { get; set; }
         public string Label => this._text.Value;
         public IComparable Value { get; private set; }
 
@@ -39,12 +39,6 @@
         {
             this._text.Align = align;
         }
-
-        public override void Clear()
-        {
-            this.Row = default;
-            base.Clear();
-        }
     }
 
     public class CellValue
@@ -61,7 +55,7 @@
         public CellValue(IComparable value)
         {
             this.Value = value;
-            this.Label = value?.ToString() ?? "";
+            this.Label = value?.ToString() ?? String.Empty;
         }
     }
 }

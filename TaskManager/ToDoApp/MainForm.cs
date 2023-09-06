@@ -21,14 +21,18 @@ namespace TaskManager
         private const ConsoleKey KEY_UP = ConsoleKey.UpArrow;
         private const ConsoleKey KEY_DOWN = ConsoleKey.DownArrow;
 
+        public App App { get; private set; }
         private readonly ToDoList _body;
         private readonly Rect _footer;
         private readonly Form _sortModal;
         private readonly Form _searchModal;
+        private readonly EditModal _editModal;
         private List<ToDo> ToDoList { get; set; } = new List<ToDo>();
         public ToDoList Body => _body;
 
-        public MainForm(int width, int height, List<ToDo> toDoList) : base(width, height, COLOR_BACKGROUND) {
+        public MainForm(int width, int height, List<ToDo> toDoList, App app) : base(width, height, COLOR_BACKGROUND)
+        {
+            this.App = app;
             this.ToDoList = toDoList;
             this.Padding.Set(0, 1, 0, 1);
             SetControls();
@@ -39,8 +43,9 @@ namespace TaskManager
             this.Add(rect);
             this.Add(this._footer);
             this._body.Sort(0);
-            this.SetSortModal(out this._sortModal);
-            this.SetSearchModal(out this._searchModal);
+            this._sortModal = AddModal<Form>(new SortModal(50, this));
+            this._searchModal = AddModal<Form>(new SearchModal(60, this));
+            this._editModal = AddModal<EditModal>(new EditModal(60, this));
         }
 
         private void SetHeader(out Rect header)
@@ -82,26 +87,19 @@ namespace TaskManager
             }
         }
 
-        private void SetSortModal(out Form modal)
+        private T AddModal<T>(Form modal) where T : Form
         {
-            modal = new SortModal(50, this);
             this.Add(modal);
             modal.Center();
-        }
-
-        private void SetSearchModal(out Form modal)
-        {
-            modal = new SearchModal(60, this);
-            this.Add(modal);
-            modal.Center();
+            return (T) modal;
         }
 
         private void SetControls()
         {
             var buttons = new Button[]
             {
-                new Button(0, "F1", "Create", KEY_CREATE, COLOR_BACKGROUND, COLOR_BUTTON),
-                new Button(0, "Enter", "Edit", KEY_EDIT, COLOR_BACKGROUND, COLOR_BUTTON),
+                new Button(0, "F1", "Create", KEY_CREATE, COLOR_BACKGROUND, COLOR_BUTTON) { Action = () => this._editModal.Show() },
+                new Button(0, "Enter", "Edit", KEY_EDIT, COLOR_BACKGROUND, COLOR_BUTTON) { Action = () => this._editModal.Show(this._body.Current) },
                 new Button(0, "Del", "Delete", KEY_DELETE, COLOR_BACKGROUND, COLOR_BUTTON),
                 new Button(0, "F2", "Search", KEY_SEARCH, COLOR_BACKGROUND, COLOR_BUTTON) { Action = () => this._searchModal.Show() },
                 new Button(0, "F3", "Sort", KEY_SORT, COLOR_BACKGROUND, COLOR_BUTTON) { Action = () => this._sortModal.Show() },
@@ -123,6 +121,16 @@ namespace TaskManager
         {
             UpdateFooterButtons();
             base.RenderChildren();
+        }
+
+        public void Save()
+        {
+            this.App.Write(this._body.Data);
+        }
+
+        public void SetData(List<ToDo> data)
+        {
+            this._body.SetData(data);
         }
     }
 }

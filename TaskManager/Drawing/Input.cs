@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
@@ -16,15 +17,16 @@ namespace Drawing
         public ConsoleColor Color { get; set; }
         public ConsoleColor LabelColor { get; set; }
         public string? Label { get; private set; }
-        public string Value { get; set; } = String.Empty;
+        public virtual string Value { get; set; } = String.Empty;
         public bool Focused { get; private set; } = false;
+        public bool Nullable { get; set; } = true;
         public override int Height { get => string.IsNullOrEmpty(this.Label) ? 2 : 3; }
         public bool Empty { get => string.IsNullOrEmpty(this.Value); }
         public new Rect Container { get; set; }
         public string? Format { get; set; } = null;
         public string? Placeholder { get; set; } = null;
-        public string ErrorMessage { get; set; } = "Invalid format";
-        private bool Valid { get => string.IsNullOrEmpty(this.Format) || this.Empty || Regex.IsMatch(this.Value, this.Format); }
+        public virtual string ErrorMessage => !this.Nullable && this.Empty ? "Value required" : "Invalid format";
+        public virtual bool Valid => this.Nullable && this.Empty || (!this.Empty && (string.IsNullOrEmpty(this.Format) || !this.Empty && Regex.IsMatch(this.Value, this.Format)));
         public Action<string?>? OnChange { get; set; }
 
         public Input(string? label, string value, Rect container, ConsoleColor background, ConsoleColor color, ConsoleColor labelColor) : base(container.InnerWidth, 1, background)
@@ -59,8 +61,8 @@ namespace Drawing
             SetLine(this.Height - 2);
             var printText = hasPlaceholder ? this.Placeholder : this.Value[^Math.Min(this.Width, this.Value.Length)..];
             Console.Write(printText);
-            if (printText.Length < this.Width) Console.Write(new string(' ', this.Width - printText.Length));
-            if (!string.IsNullOrEmpty(this.Format)) HandleError();
+            if (printText?.Length < this.Width) Console.Write(new string(' ', this.Width - printText.Length));
+            HandleError();
         }
 
         public void Focus()
@@ -90,12 +92,9 @@ namespace Drawing
         {
             (int x, int y) = SetLine(this.Height - 1);
             Console.SetCursorPosition(x, y);
-            if (this.Valid)
-            {
-                ConsoleUtils.SetColors(this.Container.Background);
-                Console.WriteLine(new string(' ', this.Width));
-            }
-            else
+            ConsoleUtils.SetColors(this.Container.Background);
+            Console.Write(new string(' ', this.Width));
+            if (!this.Valid)
             {
                 ConsoleUtils.SetColors(ConsoleColor.Red, ConsoleColor.White);
                 Console.CursorLeft = x + this.InnerWidth - this.ErrorMessage.Length;
@@ -111,7 +110,7 @@ namespace Drawing
             Console.CursorVisible = true;
         }
 
-        private void Type(string value)
+        public virtual void Type(string value)
         {
             Console.CursorVisible = false;
             this.Value = value;
@@ -135,6 +134,61 @@ namespace Drawing
         public override void Clear()
         {
             this.Value = "";
+        }
+    }
+
+    public class DateInput : Input
+    {
+        public DateTime? Date { get; private set; }
+        public string _dateFormat;
+        public string _value = String.Empty;
+        public override string Value {
+            get
+            {
+                return this._value;
+            }
+            set {
+                SetDate(value);
+                this._value = value;
+            }
+        }
+        public override bool Valid {
+            get {
+                if (!base.Valid) return false;
+                return this.Empty || this.Date.HasValue;
+            }
+        }
+
+        public override string ErrorMessage {
+            get
+            {
+                if (!base.Valid) return base.ErrorMessage;
+                return "Invalid Date";
+            }
+        }
+
+        public DateInput(string label, Rect container, ConsoleColor background, ConsoleColor color, ConsoleColor labelColor, string dateFormat) : base(label, container, background, color, labelColor) {
+            this._dateFormat = dateFormat;
+        }
+
+        public override void Type(string value)
+        {
+            SetDate(value);
+            base.Type(value);
+        }
+
+        private void SetDate(string value)
+        {
+            this._value = value;
+            var parsed = DateTime.TryParseExact(value, this._dateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date);
+            if (base.Valid && parsed)
+            {
+                this.Date = date;
+            }
+            else if (this.Date != null)
+            {
+                this.Date = null;
+            }
         }
     }
 }

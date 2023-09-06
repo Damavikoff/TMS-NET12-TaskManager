@@ -92,7 +92,7 @@ namespace ToDoApp
             var index = this._body.CurrentIndex;
             var column = this._sortColumns[index];
             var sort = column == this.DataList.SortedBy && column.Order == Order.Asc ? Order.Desc : Order.Asc;
-            this._mainForm.Body.Sort(index, sort);
+            this._mainForm.Body.SortData(index, sort);
             this.Hide();
         }
 
