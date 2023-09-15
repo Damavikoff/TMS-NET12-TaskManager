@@ -46,7 +46,6 @@ namespace TaskManager
             {
                 this.FilteredData.Clear();
             }
-            this.Body.CurrentIndex = 0;
             this.Body.SetRows(rows);
         }
 
@@ -89,6 +88,17 @@ namespace TaskManager
                 this.Data.Add(item);
             }
             this.SortData();
+            this.Body.SetActiveRow(this.DataList.IndexOf(item));
+        }
+
+        public void Remove()
+        {
+            if (this.Current == null) return;
+            var i = this.DataList.IndexOf(this.Current);
+            this.Data.Remove(this.Current);
+            this.FilteredData.Remove(this.Current);
+            this.Body.RemoveCurrentRow();
+            this.Body.SetActiveRow(Math.Max(0, i - 1));
         }
 
         private static List<TableColumn> GetColumns(int width)

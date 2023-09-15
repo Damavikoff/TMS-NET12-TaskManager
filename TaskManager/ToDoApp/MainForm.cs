@@ -71,12 +71,13 @@ namespace TaskManager
             escapeButton.X = footer.Width - escapeButton.Width;
         }
 
-        private void UpdateFooterButtons()
+        private void UpdateFooterControls()
         {
             var hasRows = this._body.Body.Rows.Count > 0;
             this.ButtonKeys[KEY_RESET].Toggle(this._body.Filtered);
             this.ButtonKeys[KEY_SORT].Toggle(hasRows);
             this.ButtonKeys[KEY_EDIT].Toggle(hasRows);
+            this.ButtonKeys[KEY_DELETE].Toggle(hasRows);
             this.ButtonKeys[KEY_DELETE].Toggle(hasRows);
 
             var x = 0;
@@ -100,7 +101,7 @@ namespace TaskManager
             {
                 new Button(0, "F1", "Create", KEY_CREATE, COLOR_BACKGROUND, COLOR_BUTTON) { Action = () => this._editModal.Show() },
                 new Button(0, "Enter", "Edit", KEY_EDIT, COLOR_BACKGROUND, COLOR_BUTTON) { Action = () => this._editModal.Show(this._body.Current) },
-                new Button(0, "Del", "Delete", KEY_DELETE, COLOR_BACKGROUND, COLOR_BUTTON),
+                new Button(0, "Del", "Delete", KEY_DELETE, COLOR_BACKGROUND, COLOR_BUTTON) { Action = () => Remove() },
                 new Button(0, "F2", "Search", KEY_SEARCH, COLOR_BACKGROUND, COLOR_BUTTON) { Action = () => this._searchModal.Show() },
                 new Button(0, "F3", "Sort", KEY_SORT, COLOR_BACKGROUND, COLOR_BUTTON) { Action = () => this._sortModal.Show() },
                 new Button(0, "F4", "Reset", KEY_RESET, COLOR_BACKGROUND, COLOR_BUTTON) { Action = () => ResetData() },
@@ -111,15 +112,25 @@ namespace TaskManager
             this.SetButtons(buttons);
         }
 
+        private void Remove()
+        {
+            var task = this._body.Current;
+            this._body.Remove();
+            Save();
+            if (task != null)
+                this.App.Log($"Task {task.Id} was removed");
+            RenderChildren();
+        }
+
         private void ResetData()
         {
             this._body.Reset();
-            this.RenderChildren();
+            RenderChildren();
         }
 
         public override void RenderChildren()
         {
-            UpdateFooterButtons();
+            UpdateFooterControls();
             base.RenderChildren();
         }
 

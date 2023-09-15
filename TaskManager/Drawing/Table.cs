@@ -75,18 +75,29 @@ namespace Drawing
         public void SetActiveRow(int i)
         {
             if (i == this.CurrentIndex) return;
-            if (this.Page.Count == 0) return;
-            var toRender = i < this.StartIndex || i > this.EndIndex;
+            if (this.RowsToRender.Count == 0) return;
+            var s = GetStartIndex(i);
+            var shifted = s != this.StartIndex;
+            this.StartIndex = s;
             var current = this.CurrentIndex;
             this.CurrentIndex = i;
-            if (toRender)
+            if (shifted)
             {
-                this.StartIndex = i < this.StartIndex ? i : i - this.RenderCount + 1;
                 this.Render();
                 return;
             }
-            this.RowsToRender[current].Render();
+            if (current < this.RowsToRender.Count)
+                this.RowsToRender[current].Render();
             this.RowsToRender[this.CurrentIndex].Render();
+        }
+
+        private int GetStartIndex(int i)
+        {
+            var outRange = i == this.RowsToRender.Count - 1 && this.RowsToRender.Count > this.RenderCount && this.StartIndex + this.RenderCount >= this.RowsToRender.Count;
+            if (outRange) return this.RowsToRender.Count - this.RenderCount;
+            var toRender = i < this.StartIndex || i > this.EndIndex || outRange;
+            if (toRender) return i < this.StartIndex ? i : i - this.RenderCount + 1;
+            return this.StartIndex;
         }
 
         public void Sort(int index, Order order = Order.Asc)
@@ -113,6 +124,16 @@ namespace Drawing
             this.Filtered = false;
             this.CurrentIndex = 0;
             this.FilteredRows.Clear();
+        }
+
+        public void RemoveRow(int i)
+        {
+            this.Rows.RemoveAt(i);
+        }
+
+        public void RemoveCurrentRow()
+        {
+            this.RemoveRow(this.CurrentIndex);
         }
     }
 
