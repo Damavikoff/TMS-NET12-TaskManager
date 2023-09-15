@@ -74,6 +74,7 @@ namespace Drawing
 
         public void SetActiveRow(int i)
         {
+            if (i == this.CurrentIndex) return;
             if (this.Page.Count == 0) return;
             var toRender = i < this.StartIndex || i > this.EndIndex;
             var current = this.CurrentIndex;
